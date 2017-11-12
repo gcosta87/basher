@@ -7,7 +7,7 @@
 # Autor: Gonzalo Gabriel Costa (twitter.com/gcosta87)
 # Ver el archivo LICENSE para la informacion del liberación del codigo de este proyecto.
 # web: https://github.com/gcosta87/basher
-#
+
 
 ##
 ##	CONSTANTES / CONFIGURACIONES
