@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Basher - Un Servidor HTTP escrito en Bash">
+    <meta name="author" content="Gonzalo Gabriel Costa">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <title>Basher - Web Server</title>
+    <!-- Bootstrap 4.0.0 Beta 2 -->
+    <link href="/assets/bootstrap4/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/style.css" rel="stylesheet">
+    <!-- Font Awasome 4.7.0 -->
+    <link rel="stylesheet" href="/assets/font-awesome/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+        <div class="cover-container">
+          <header class="masthead clearfix">
+            <div class="inner">
+              <h3 class="masthead-brand">Basher</h3>
+              <nav class="nav nav-masthead">
+                <a class="nav-link" href="/">Inicio</a>
+                <a class="nav-link active" href="/ejemplos.html">Ejemplos</a>
+              </nav>
+            </div>
+          </header>
+          <br/><br/><br/>
+          <main role="main" class="inner cover">
+            <div class="row">
+
+               <div class="col-md-6">
+                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                  <div class="card-body">
+                    <h3 class="card-title"><i class="fa fa-server fa-fw"></i><br/>Server</h3>
+                    <p class="card-text" id="server"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                  <div class="card-body">
+                    <h3 class="card-title"><i class="fa fa-hdd-o fa-fw"></i><br/>Recursos</h3>
+                    <p class="card-text" id="recursos"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card text-white bg-dark mb-2" style="max-width: 20rem;">
+                  <div class="card-body">
+                    <h3 class="card-title"><i class="fa fa-clock-o fa-fw"></i><br/>Uptime</h3>
+                    <p class="card-text"id="uptime"></p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </main>
+
+          <footer class="mastfoot">
+            <div class="inner">
+              <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+            </div>
+          </footer>
+        </div>
+      </div>
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="/assets/bootstrap4/assets/js/vendor/popper.min.js"></script>
+    <script src="/assets/bootstrap4/dist/js/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+  
+  function mostrarInfo(){
+      var $elemento = $('#server');
+      $.getJSON('/api/info',function(data){
+        var html='<strong>hostname</strong>: '+data.hostname+'<br/>';
+        html+='<strong>ip local</strong>: '+data.ip.local+'<br/>';
+        html+='<strong>ip remota</strong>: '+data.ip.remota+'<br/>';
+        html+='<strong>kernel</strong>: '+data.kernel+'<br/>';
+        $elemento.html(html);
+      });
+  }
+
+  function mostrarUptime(){
+    var $elemento = $('#uptime');
+    setInterval(function(){
+      $.getJSON('/api/uptime',function(data){
+          $elemento.html('<span title="'+data.desde+'">'+data.uptime+'</span>');
+      });
+    },1000);
+  }
+
+
+  function mostrarRecursos(){
+    var $elemento = $('#recursos');
+    setInterval(function(){
+      $.getJSON('/api/recursos',function(data){
+        var html='<strong>memoria</strong>:';
+        html+='<span title="usada">'+data.memoria.usada+'</span> / ';
+        html+='<span title="libre">'+data.memoria.libre+'</span>';
+        $elemento.html(html);
+      });
+    },1000);
+  }
+
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+
+    mostrarInfo();
+    mostrarUptime();
+    mostrarRecursos();
+
+  });
+</script>
+
+  </body>
+</html>

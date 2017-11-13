@@ -38,6 +38,7 @@ declare -r REQUEST_METHOD='method'
 
 declare -r CONTENT_TYPE_HTML='text/html; charset=utf-8';
 declare -r CONTENT_TYPE_TEXT='text/plain; charset=utf-8';
+declare -r CONTENT_TYPE_JSON='application/json; charset=utf-8';
 
 declare -A CONFIG=(
 	# public resources root: assets, js, public data
@@ -97,6 +98,17 @@ sendHTMLResponse(){
 	sendRawTextResponse "$1" "$CONTENT_TYPE_HTML" "$2";
 }
 
+
+
+# Envia una respuesta satisfactoria (HTTP 200) con contenido JSON
+# $1 (string): el contenido (JSON) 
+# Ejemplo sendJSONResponse '{success:true, message:'mensaje de ejemplo'}';
+sendJSONResponse(){
+	sendRawTextResponse $HTTP_STATUS_200 "$CONTENT_TYPE_JSON" "$1";
+}
+
+
+
 # Envia una respuesta 404 en HTML
 send404HTMLResponse(){
 	sendHTMLResponse $HTTP_STATUS_404 "${CONFIG[template_404]}";
@@ -116,13 +128,13 @@ detectMimeType(){
 
 	case $extension in
 		html)
-			echo 'text/html; charset=utf-8';;
+			echo $CONTENT_TYPE_HTML;;
 		js)
 			echo 'application/javascript; charset=utf-8';;
 		css)
 			echo 'text/css; charset=utf-8';;
 		json)
-			echo 'application/json; charset=utf-8';;
+			echo $CONTENT_TYPE_JSON;;
 		*)
 			file -b --mime-type "$1";;
 	esac
