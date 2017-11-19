@@ -11,6 +11,7 @@
 
 declare DEFAULT_PORT=80
 declare DEFAULT_BINDIP="localhost"
+declare PID_FILE=".pid"
 
 
 if [[ $1 != '' ]]
@@ -24,6 +25,8 @@ bindIP=$DEFAULT_BINDIP;
 
 echo "Inicializando Basher..."
 socat TCP4-LISTEN:$port,bind="$bindIP",su=nobody,reuseaddr,fork EXEC:./server/basher.sh &
-echo "Proceso (id): $!";
+pid=$!;
+echo $pid > "$PID_FILE";
+echo "Proceso (id): $pid";
 echo "Escuchando en $bindIP:$port"
 echo
