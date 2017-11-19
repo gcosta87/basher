@@ -30,20 +30,38 @@
           <main role="main" class="inner cover">
             <div class="row">
 
+              <div class="col-md-6">
+                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                  <div class="card-body">
+                    <h3 class="card-title"><i class="fa fa-server fa-fw"></i><br/>Basher</h3>
+                    <p class="card-text" id="basher"></p>
+                  </div>
+                  <div class="card-footer">
+                    <small class="text-muted"><a href="/api/basher" target="_blank"><i class="fa fa-link"></i>/api/basher</a></small>
+                  </div>
+                </div>
+              </div>
+
                <div class="col-md-6">
                 <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-server fa-fw"></i><br/>Server</h3>
                     <p class="card-text" id="server"></p>
                   </div>
+                  <div class="card-footer">
+                    <small class="text-muted"><a href="/api/info" target="_blank"><i class="fa fa-link"></i>/api/info</a></small>
+                  </div>
                 </div>
               </div>
 
               <div class="col-md-6">
-                <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+                <div class="card text-white bg-dark" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-hdd-o fa-fw"></i><br/>Recursos</h3>
                     <p class="card-text" id="recursos"></p>
+                  </div>
+                  <div class="card-footer">
+                    <small class="text-muted"><a href="/api/recursos" target="_blank"><i class="fa fa-link"></i>/api/recursos</a></small>
                   </div>
                 </div>
               </div>
@@ -53,6 +71,9 @@
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-clock-o fa-fw"></i><br/>Uptime</h3>
                     <p class="card-text"id="uptime"></p>
+                  </div>
+                  <div class="card-footer">
+                    <small class="text-muted"><a href="/api/uptime" target="_blank"><i class="fa fa-link"></i>/api/uptime</a></small>
                   </div>
                 </div>
               </div>
@@ -77,6 +98,19 @@
 
 
 <script type="text/javascript">
+  
+  function mostrarBasher(){
+      var $elemento = $('#basher');
+      setInterval(function(){
+        $.getJSON('/api/basher',function(data){
+          var html='<strong>version</strong>: '+data.version+'<br/>';
+          html+='<strong>uptime</strong>: '+data.uptime+'<br/>';
+          html+='<strong>rutas dinamicas</strong>: '+data.rutas.dinamicas+'<br/>';
+          html+='<strong>controladores</strong>: '+data.controladores+'<br/>';
+          $elemento.html(html);
+        });
+      },1000);
+  }
   
   function mostrarInfo(){
       var $elemento = $('#server');
@@ -103,9 +137,17 @@
     var $elemento = $('#recursos');
     setInterval(function(){
       $.getJSON('/api/recursos',function(data){
-        var html='<strong>memoria</strong>:';
-        html+='<span title="usada">'+data.memoria.usada+'</span> / ';
-        html+='<span title="libre">'+data.memoria.libre+'</span>';
+        var html='<div class="row"><div class="col-md-6 "><strong>memoria</strong>';
+        html+='<dl><dt>usada / libre</dt><dd>';
+        html+='<span title="usada (M)">'+Math.floor(data.memoria.usada/1024)+'</span> / ';
+        html+='<span title="libre (M)">'+Math.floor(data.memoria.libre/1024)+'</span></dd>';
+        html+='<dt>uso</dt><dd>'+data.memoria.uso+'%</dd></dl></div>';
+
+        html+='<div class="col-md-5"><strong>cpu</strong> <i class="fa fa-question-circle-o" title="'+data.cpu.nombre +' ('+data.cpu.cores+' cores)"></i><dl>';
+        html+='<dt>uso</dt><dd>'+data.cpu.uso+'%</dd>';
+        html+='<dt>procesos</dt><dd>'+data.cpu.procesos+'</dd></div>';
+
+
         $elemento.html(html);
       });
     },1000);
@@ -116,6 +158,7 @@
     $('[data-toggle="tooltip"]').tooltip();
 
 
+    mostrarBasher();
     mostrarInfo();
     mostrarUptime();
     mostrarRecursos();

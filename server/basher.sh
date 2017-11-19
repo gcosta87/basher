@@ -13,7 +13,7 @@
 ##	CONSTANTES / CONFIGURACIONES
 ##
 
-declare -r BASHER_SERVER='Basher version 0.1';
+declare -r BASHER_VERSION='0.1';
 # Paths relativos a los archivos definidos por el usuario
 declare -r BASHER_USER_CONFIG='./server/config.sh';
 declare -r BASHER_USER_CONTROLLER='./webApp/controller.sh';
@@ -41,10 +41,10 @@ declare -r CONTENT_TYPE_TEXT='text/plain; charset=utf-8';
 declare -r CONTENT_TYPE_JSON='application/json; charset=utf-8';
 
 declare -A CONFIG=(
-	# public resources root: assets, js, public data
+	# raiz del directorio publico: assets, js, public data
 	[public_dir_root]='./public'
 
-	#private web resources: hidden files,etc.
+	#raiz del direcotorio recursos  (acceso no publico / no compartidos): hidden files,etc.
 	[resources_dir_root]='./resources'
 
 	#alias or name of default index file, when user access to a directory
@@ -55,6 +55,9 @@ declare -A CONFIG=(
 	[template_fileNotFound]='<!doctype html><html><center>File not found! :(</center></html>'
 
 	[template_500]='<!doctype html><html><center>Error 500 :(<br/><small>(Internal Server Error)</small></center></html>'
+
+	#Control de la cache en el browser: tiempo (en segundos) par indicar que el contenido deba descartarse. Defualt 15 minutos (54000)
+	[cache_refresh_time]=54000
 )
 
 # Configuracion del ruteo/routing
@@ -79,7 +82,7 @@ sendRawTextResponse(){
 
 		#calcula la longitud en bytes!
 		lenght=`echo "$3" | wc -c`;
-		echo -en "HTTP/1.0 ${HTTP_STATUS[$1]}\r\nServer: $BASHER_SERVER\r\nDate: $now\r\nContent-Type: $2\r\nContent-Length: $lenght\r\nConnection: close\r\n\r\n";
+		echo -en "HTTP/1.0 ${HTTP_STATUS[$1]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $2\r\nContent-Length: $lenght\r\nConnection: close\r\n\r\n";
 		echo "$3";
 }
 
@@ -154,7 +157,7 @@ sendRawFileResponse(){
 		#mimeType=`file -b --mime-type "$1"`;
 		mimeType=`detectMimeType "$1"`;
 		
-		echo -en "HTTP/1.0 ${HTTP_STATUS[200]}\r\nServer: $BASHER_SERVER\r\nDate: $now\r\nContent-Type: $mimeType\r\nContent-Length: $lenght\r\nConnection: close\r\n\r\n";
+		echo -en "HTTP/1.0 ${HTTP_STATUS[200]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $mimeType\r\nContent-Length: $lenght\r\nConnection: close\r\nCache-Control:max-age=${CONFIG[cache_refresh_time]}, public, immutable\r\n\r\n";
 		cat "$1";
 	else
 		#dont exist the file...

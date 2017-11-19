@@ -63,7 +63,7 @@ body {
  */
 
 .masthead {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .masthead-brand {
@@ -130,10 +130,6 @@ body {
 
 @media (min-width: 40em) {
   /* Pull out the header and footer */
-  .masthead {
-    position: fixed;
-    top: 0;
-  }
   .mastfoot {
     position: relative;
     bottom: 0;
