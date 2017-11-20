@@ -27,18 +27,16 @@
 
 
 basher(){
-	version=` grep -m1 'VERSION' server/basher.sh | cut -f2 -d'=' | tr -d "';"`;
 	#se calcula el comienzo y tiempo transcurrido de basher (segun su pid).info: uptime start
-	uptimeBasher=`ps -p $(cat .pid) -o etime | tail -n1 | tr -s ' ' | sed -r  's:^\s+::'`;
+	uptimeBasher=`basherUptime`;
 
-	#rutas definidas por el usuario
-	rutasDinamicas=` grep -E  'ROUTING\[[^\]+]' webApp/controller.sh | wc -l`;
 	#se listan recursivamente los archivos, excluyendo del conteo a los directorios
 	rutasEstaticas=`ls -AR  "${CONFIG[public_dir_root]}" | grep -vE ':$' | grep -vE '^$' | wc -l`;
 	recursosCantidadArchivos=`ls -AR "${CONFIG[resources_dir_root]}" | grep -vE ':$' | grep -vE '^$' | wc -l`;
+	
+	controladores=`echo "${ROUTING[@]}" | tr ' ' '\n' | sort -u | wc -l`;
 
-	controladores=`grep -E  'ROUTING\[[^\]+]' webApp/controller.sh | cut -f2 -d'=' | sort | uniq | wc -l`;
-	sendJSONResponse "{\"version\":$version,\"uptime\":\"$uptimeBasher\",\"rutas\":{\"dinamicas\":$rutasDinamicas,\"estaticas\":$rutasEstaticas},\"recursos\":$recursosCantidadArchivos,\"controladores\":$controladores}";
+	sendJSONResponse "{\"version\":$BASHER_VERSION,\"uptime\":\"$uptimeBasher\",\"rutas\":{\"dinamicas\":${#ROUTING[@]},\"estaticas\":$rutasEstaticas},\"recursos\":$recursosCantidadArchivos,\"controladores\":$controladores}";
 }
 
 

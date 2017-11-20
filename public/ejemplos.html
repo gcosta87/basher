@@ -19,7 +19,7 @@
         <div class="cover-container">
           <header class="masthead clearfix">
             <div class="inner">
-              <h3 class="masthead-brand">Basher</h3>
+              <h3 class="masthead-brand"><a href="/">Basher</a></h3>
               <nav class="nav nav-masthead">
                 <a class="nav-link" href="/">Inicio</a>
                 <a class="nav-link active" href="/ejemplos.html">Ejemplos</a>
@@ -34,7 +34,12 @@
                 <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-server fa-fw"></i><br/>Basher</h3>
-                    <p class="card-text" id="basher"></p>
+                    <div class="card-text">
+                      <strong>version</strong>: <span id="basher_version"></span><br>
+                      <strong>uptime</strong>: <span id="basher_uptime"></span><br>
+                      <strong>rutas dinamicas</strong>: <span id="basher_rutasDinamicas"></span><br>
+                      <strong>controladores</strong>: <span id="basher_controladores"></span><br>
+                    </div>
                   </div>
                   <div class="card-footer">
                     <small class="text-muted"><a href="/api/basher" target="_blank"><i class="fa fa-link"></i>/api/basher</a></small>
@@ -46,7 +51,12 @@
                 <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-server fa-fw"></i><br/>Server</h3>
-                    <p class="card-text" id="server"></p>
+                    <div class="card-text">
+                      <strong>hostname</strong>: <span id="server_hostname"></span><br>
+                      <strong>ip local</strong>: <span id="server_ipLocal"></span><br>
+                      <strong>ip remota</strong>: <span id="server_ipRemota"></span><br>
+                      <strong>kernel</strong>: <span id="server_kernel"></span><br>
+                    </div>
                   </div>
                   <div class="card-footer">
                     <small class="text-muted"><a href="/api/info" target="_blank"><i class="fa fa-link"></i>/api/info</a></small>
@@ -58,7 +68,30 @@
                 <div class="card text-white bg-dark" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-hdd-o fa-fw"></i><br/>Recursos</h3>
-                    <p class="card-text" id="recursos"></p>
+                    <div class="card-text">
+                      <div class="row">
+                        <div class="col-md-6 ">
+                          <strong>memoria</strong>
+                          <dl>
+                            <dt>usada / libre</dt>
+                            <dd>
+                              <span title="usada (M)" id="recursos_memoriaUsada">?</span> /
+                              <span title="libre (M)" id="recursos_memoriaLibre">?</span></dd>
+                            <dt>uso</dt>
+                            <dd id="recursos_memoriaUso">?</dd>
+                          </dl>
+                        </div>
+                        <div class="col-md-5">
+                          <strong>cpu</strong> <i class="fa fa-question-circle-o" title="?" id="recursos_cpuInfo"></i>
+                          <dl>
+                            <dt>uso</dt>
+                            <dd id="recursos_cpuUso">?</dd>
+                            <dt>procesos</dt>
+                            <dd id="recursos_cpuProcesos">?</dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="card-footer">
                     <small class="text-muted"><a href="/api/recursos" target="_blank"><i class="fa fa-link"></i>/api/recursos</a></small>
@@ -70,7 +103,9 @@
                 <div class="card text-white bg-dark mb-2" style="max-width: 20rem;">
                   <div class="card-body">
                     <h3 class="card-title"><i class="fa fa-clock-o fa-fw"></i><br/>Uptime</h3>
-                    <p class="card-text"id="uptime"></p>
+                    <div class="card-text" >
+                      <span title="?" id="uptime">?</span>
+                    </div>
                   </div>
                   <div class="card-footer">
                     <small class="text-muted"><a href="/api/uptime" target="_blank"><i class="fa fa-link"></i>/api/uptime</a></small>
@@ -100,56 +135,67 @@
 <script type="text/javascript">
   
   function mostrarBasher(){
-      var $elemento = $('#basher');
+      var $version = $('#basher_version');
+      var $uptime = $('#basher_uptime');
+      var $rutasDinamicas = $('#basher_rutasDinamicas');
+      var $controladores = $('#basher_controladores');
+
       setInterval(function(){
         $.getJSON('/api/basher',function(data){
-          var html='<strong>version</strong>: '+data.version+'<br/>';
-          html+='<strong>uptime</strong>: '+data.uptime+'<br/>';
-          html+='<strong>rutas dinamicas</strong>: '+data.rutas.dinamicas+'<br/>';
-          html+='<strong>controladores</strong>: '+data.controladores+'<br/>';
-          $elemento.html(html);
+          $version.text(data.version);
+          $uptime.text(data.uptime);
+          $rutasDinamicas.text(data.rutas.dinamicas);
+          $controladores.text(data.controladores);
         });
       },1000);
   }
   
   function mostrarInfo(){
-      var $elemento = $('#server');
+      var $hostname = $('#server_hostname');
+      var $ipLocal = $('#server_ipLocal');
+      var $ipRemota = $('#server_ipRemota');
+      var $kernel = $('#server_kernel');
+       
+
       $.getJSON('/api/info',function(data){
-        var html='<strong>hostname</strong>: '+data.hostname+'<br/>';
-        html+='<strong>ip local</strong>: '+data.ip.local+'<br/>';
-        html+='<strong>ip remota</strong>: '+data.ip.remota+'<br/>';
-        html+='<strong>kernel</strong>: '+data.kernel+'<br/>';
-        $elemento.html(html);
+        $hostname.text(data.hostname);
+        $ipLocal.text(data.ip.local);
+        $ipRemota.text(data.ip.remota);
+        $kernel.text(data.kernel);
       });
   }
 
   function mostrarUptime(){
-    var $elemento = $('#uptime');
+    var $uptime = $('#uptime');
     setInterval(function(){
       $.getJSON('/api/uptime',function(data){
-          $elemento.html('<span title="'+data.desde+'">'+data.uptime+'</span>');
+          $uptime.text(data.uptime);
+          $uptime.prop('title',data.desde);
       });
     },1000);
   }
 
 
   function mostrarRecursos(){
-    var $elemento = $('#recursos');
+    var $memoriaUsada = $('#recursos_memoriaUsada');
+    var $memoriaLibre = $('#recursos_memoriaLibre');
+    var $memoriaUso = $('#recursos_memoriaUso');
+    
+    var $cpuInfo = $('#recursos_cpuInfo');
+    var $cpuUso = $('#recursos_cpuUso');
+    var $cpuProcesos = $('#recursos_cpuProcesos');
+
     setInterval(function(){
       $.getJSON('/api/recursos',function(data){
-        var html='<div class="row"><div class="col-md-6 "><strong>memoria</strong>';
-        html+='<dl><dt>usada / libre</dt><dd>';
-        html+='<span title="usada (M)">'+Math.floor(data.memoria.usada/1024)+'</span> / ';
-        html+='<span title="libre (M)">'+Math.floor(data.memoria.libre/1024)+'</span></dd>';
-        html+='<dt>uso</dt><dd>'+data.memoria.uso+'%</dd></dl></div>';
+      
+        $memoriaUsada.text(Math.floor(data.memoria.usada/1024))
+        $memoriaLibre.text(Math.floor(data.memoria.libre/1024));
+        $memoriaUso.text(data.memoria.uso+'%');
 
-        html+='<div class="col-md-5"><strong>cpu</strong> <i class="fa fa-question-circle-o" title="'+data.cpu.nombre +' ('+data.cpu.cores+' cores)"></i><dl>';
-        html+='<dt>uso</dt><dd>'+data.cpu.uso+'%</dd>';
-        html+='<dt>procesos</dt><dd>'+data.cpu.procesos+'</dd></div>';
-
-
-        $elemento.html(html);
-      });
+        $cpuInfo.prop('title',data.cpu.nombre +' ('+data.cpu.cores+' cores)');
+        $cpuUso.text(data.cpu.uso+'%');
+        $cpuProcesos.text(data.cpu.procesos);
+       });
     },1000);
   }
 
