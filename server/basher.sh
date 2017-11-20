@@ -12,11 +12,9 @@
 ##
 ##	CONSTANTES / CONFIGURACIONES
 ##
+#importacion de constantes que atraviesan a los distintos componentes de Basher
+source ./server/constants.sh;
 
-declare -r BASHER_VERSION='0.1';
-# Paths relativos a los archivos definidos por el usuario
-declare -r BASHER_USER_CONFIG='./server/config.sh';
-declare -r BASHER_USER_CONTROLLER='./webApp/controller.sh';
 
 # Posibles estados de respuesta HTTP
 declare -r HTTP_STATUS_200=200;
@@ -165,7 +163,8 @@ sendRawFileResponse(){
 	fi	
 }
 
-
+#se añade funciones comunes
+source ./server/functions.sh;
 
 ##
 ##	MAIN
