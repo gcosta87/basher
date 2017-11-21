@@ -41,7 +41,7 @@ basher(){
 
 
 serverUptime(){
-	uptimePretty=`uptime -p | sed -e 's:up ::' -e 's:hour:hora:' -e 's:minute:minuto:' -e 's:second:segundo:'`;
+	uptimePretty=`uptime -p | sed -e 's:up ::' -e 's:hour:hora:' -e 's:day:dia:' -e 's:week:semana:' -e 's:minute:minuto:' -e 's:second:segundo:'`;
 	uptimeDesde=`uptime -s`;
 	sendJSONResponse "{\"uptime\":\"$uptimePretty\",\"desde\":\"$uptimeDesde\"}";
 }
