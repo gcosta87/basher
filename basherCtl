@@ -1,0 +1,157 @@
+#!/bin/bash
+#	basherCtl
+#		Basher Control
+#		Permite controlar y conocer detalles del servicio de Basher.
+#
+# Autor: Gonzalo Gabriel Costa (twitter.com/gcosta87)
+# Ver el archivo LICENSE para la informacion del liberación del codigo de este proyecto.
+# web: https://github.com/gcosta87/basher
+
+##
+##	CONST
+##
+source server/constants.sh;
+source server/functions.sh;
+
+declare -r DEFAULT_PORT=80
+declare -r DEFAULT_BINDIP='localhost'
+
+# Crea el archivo instance.properties para almancenar los valores de la instancia actual.
+# $1 (string): IP bindeada
+# $2 (integer): puerto
+# $3 (integer): process id (pid)
+crearArchivoProperties(){
+	echo -e "#No modificar este archivo!\n$PROPERTY_KEY_IP=$1\n$PROPERTY_KEY_PORT=$2\n$PROPERTY_KEY_PID=$3" > "$PROPERTY_FILE";
+}
+
+##
+##	FUNCTIONS
+##
+#Start the Basher, based on socat, and update the .pid file
+#$1 (string): ip o puerto a bindear 
+#$2 (integer): puerto (opcional) 
+start(){
+	port=$DEFAULT_PORT;
+	bindIP=$DEFAULT_BINDIP;
+
+	if [[ "$#" -eq 1 ]]
+	then
+		port=$1;
+	else
+		if [[ "$#" -eq 2 ]]
+		then
+			port=$2;
+			bindIP=$1;
+		fi
+	fi
+
+	set -e;
+	echo "Comenzando Basher a través de socat...";
+	socat TCP4-LISTEN:80,bind=localhost,su=nobody,reuseaddr,fork EXEC:$BASHER_SCRIPT & 	
+	pid=`ps  -aux | grep socat | grep $BASHER_SCRIPT | tr -s ' ' |cut -f2 -d' '`;
+	crearArchivoProperties "$bindIP" $port $pid
+	echo "Escuchando en $bindIP:$port";
+	echo "ID de process (pid): $pid";
+	set +e;
+	
+}
+
+
+stop(){
+	set -e;
+	pid=`readProperty $PROPERTY_KEY_PID`;
+	echo "Deteniendo Basher..."
+	kill "$pid";
+	rm "$PROPERTY_FILE";
+	echo "El servicio ha sido detenido!."
+	set +e;
+}
+
+
+
+restart(){
+	echo "no implementado aun!";
+}
+
+
+status(){
+	echo "no implementado aun!";
+}
+
+
+mostrarAyuda(){
+	echo -e 'BasherCtl:\n\tUtilitario para controlar a Basher y conocer su estado.\n\tSolo es posible poner en funcionamiento, y controlar, una única instancia de Basher.\n\nWEB:\n\thttps://github.com/gcosta87/basher\n\nUSO:\n\t$ ./basherCtl OPERACION [argumentos]\n\n';
+	echo 'OPERACION:';
+	echo -e '\tstart [port|(localhost|ip) port)\n\t\tLanza una instancia de Basher. Es posible asociar (bindear) el servicio a un\n\t\tpuerto y/o interfaz de red. Por defecto se bindea localhost:80.\n\t\tEjemplos:';
+	echo -e '\t\t$ ./basherCtl start';
+	echo -e '\t\t$ ./basherCtl start 8080';
+	echo -e '\t\t$ ./basherCtl start 192.168.100.1 80';
+	echo;
+	
+	echo -e '\tstop\n\t\tDetiene el servicio previamente iniciado.';
+	echo;
+
+	echo -e '\trestart\n\t\tReinicializa el servicio con la misma configuracion brindada al lanzarse.';
+	echo;
+
+
+	echo -e '\tstatus\n\t\tMuestra informacion detallada de la instacia que esta corriendo.\n\t\tPodrá conocer datos del bindeo, uptime y process id.';
+	echo;
+
+	echo -e '\t-h\n\t--help\n\t\tMuestra esta ayuda.';
+	echo;
+
+}
+
+##
+##	MAIN
+##
+
+if [ "$#" -ge 1 ];
+then
+	case $1 in
+		start)
+			if [[ "$#" -ge 1 && "$#" -le 3 ]];
+			then
+				start "${@:2}";
+			else
+				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
+			fi
+			;;
+		stop)
+			if [[ "$#" -eq 1 ]];
+			then
+				stop;
+			else
+				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
+			fi
+			;;
+			
+		restart)
+			if [[ "$#" -eq 1 ]];
+			then
+				restart;
+			else
+				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
+			fi
+			;;
+		status)
+			if [[ "$#" -eq 1 ]];
+			then
+				status;
+			else
+				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
+			fi
+			;;
+
+		--help)
+			mostrarAyuda;;
+		-h)
+			mostrarAyuda;;
+		*)
+			echo -e 'Parámetro no reconocido. Consulte la ayuda:\n\t$ ./basherCtl --help';;
+	esac 
+	echo;
+else
+	mostrarAyuda;
+fi
