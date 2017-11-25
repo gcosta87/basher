@@ -47,11 +47,16 @@ start(){
 
 	set -e;
 	echo "Comenzando Basher a través de socat...";
-	socat TCP4-LISTEN:80,bind=localhost,su=nobody,reuseaddr,fork EXEC:$BASHER_SCRIPT & 	
-	pid=`ps  -aux | grep socat | grep $BASHER_SCRIPT | tr -s ' ' |cut -f2 -d' '`;
-	crearArchivoProperties "$bindIP" $port $pid
-	echo "Escuchando en $bindIP:$port";
-	echo "ID de process (pid): $pid";
+	socat TCP4-LISTEN:"$port",bind="$bindIP",su=nobody,reuseaddr,fork EXEC:"$BASHER_SCRIPT" &
+	pid=`ps  -aux | grep socat | grep "$BASHER_SCRIPT" | tr -s ' ' |cut -f2 -d' '`;
+	if [[ "$pid" -gt 1 ]]
+	then
+		crearArchivoProperties "$bindIP" $port $pid
+		echo "Escuchando en $bindIP:$port";
+		echo "ID de proceso (pid): $pid";
+	else
+		echo 'Error: no ha sido posible comenzar basher!';
+	fi
 	set +e;
 	
 }
@@ -68,6 +73,22 @@ stop(){
 }
 
 
+#Evalua el rendimiento de Basher, en base a medir el tiempo total al responder a N cantidad de request
+# $1 (integer, opcional): cantidad  de request a evaluar. Por defecto son 1.000
+benchmark(){
+	if [[ "$#" -eq 1 ]]
+	then
+		cantidadRequest=$1;
+	else
+		cantidadRequest=1000;
+	fi
+	
+	ip=`readProperty $PROPERTY_KEY_IP`;
+	
+	echo -e "Comenzando la prueba benchmark:\n\n\tCantidad de peticiones:\t$cantidadRequest\n\tURL de pruebas:\t\thttp://$ip/";
+	resultado=`{ time for i in $(seq 1 $cantidadRequest);do GET http://$ip &> /dev/null; done; } 2>&1 | grep real | cut -f2`
+	echo -e "\n\n\t\tResultado:\t$resultado";
+}
 
 restart(){
 	echo "no implementado aun!";
@@ -96,6 +117,9 @@ mostrarAyuda(){
 
 
 	echo -e '\tstatus\n\t\tMuestra informacion detallada de la instacia que esta corriendo.\n\t\tPodrá conocer datos del bindeo, uptime y process id.';
+	echo;
+
+	echo -e '\tbenchmark [N]\n\t\tEjecuta un pequeño benchmark para medir el rendimiento de Basher ante N peticiones\n\t\t(request) solicitados.Por defecto se evaluan 1000 request.';
 	echo;
 
 	echo -e '\t-h\n\t--help\n\t\tMuestra esta ayuda.';
@@ -143,6 +167,14 @@ then
 				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
 			fi
 			;;
+		benchmark)
+			if [[ "$#" -ge 1 && "$#" -le 2 ]];
+			then
+				benchmark "${@:2}";
+			else
+				echo 'La cantidad de parámetros es erronea!. Consulte la ayuda';
+			fi
+			;;	
 
 		--help)
 			mostrarAyuda;;
