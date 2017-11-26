@@ -11,7 +11,10 @@
 # $1 (string): constante PROPERTY_KEY_XXX a leer	
 # Ejemplo: readProperty #PROPERTY_KEY_XXX
 readProperty(){
-	cat "$PROPERTY_FILE" | grep "$1=" | cut -f2 -d'='
+	if [[ -e "$PROPERTY_FILE" ]]
+	then
+		cat "$PROPERTY_FILE" | grep "$1=" | cut -f2 -d'=';
+	fi;
 }
 
 #calcula el uptime de basher

@@ -48,14 +48,16 @@ start(){
 	set -e;
 	echo "Comenzando Basher a través de socat...";
 	socat TCP4-LISTEN:"$port",bind="$bindIP",su=nobody,reuseaddr,fork EXEC:"$BASHER_SCRIPT" &
-	pid=`ps  -aux | grep socat | grep "$BASHER_SCRIPT" | tr -s ' ' |cut -f2 -d' '`;
-	if [[ "$pid" -gt 1 ]]
+	
+	pid=$!;
+
+	if [ -n "$pid" ]
 	then
 		crearArchivoProperties "$bindIP" $port $pid
 		echo "Escuchando en $bindIP:$port";
 		echo "ID de proceso (pid): $pid";
 	else
-		echo 'Error: no ha sido posible comenzar basher!';
+		echo 'Error: no ha sido posible comenzar basher!. Se produjo un error al ejecutar socat.';
 	fi
 	set +e;
 	
@@ -84,9 +86,17 @@ benchmark(){
 	fi
 	
 	ip=`readProperty $PROPERTY_KEY_IP`;
+	port=`readProperty $PROPERTY_KEY_PORT`;
+
+	if [[ "$port" -ne 80 ]]
+	then
+		portString=":$port";
+	else
+		portString="";
+	fi
 	
-	echo -e "Comenzando la prueba benchmark:\n\n\tCantidad de peticiones:\t$cantidadRequest\n\tURL de pruebas:\t\thttp://$ip/";
-	resultado=`{ time for i in $(seq 1 $cantidadRequest);do GET http://$ip &> /dev/null; done; } 2>&1 | grep real | cut -f2`
+	echo -e "Comenzando la prueba benchmark:\n\n\tCantidad de peticiones:\t$cantidadRequest\n\tURL de pruebas:\t\thttp://$ip$portString/";
+	resultado=`{ time for i in $(seq 1 $cantidadRequest);do GET http://$ip$portString &> /dev/null; done; } 2>&1 | grep real | cut -f2`
 	echo -e "\n\n\t\tResultado:\t$resultado";
 }
 
@@ -96,7 +106,43 @@ restart(){
 
 
 status(){
-	echo "no implementado aun!";
+	if [[ -e "$PROPERTY_FILE" ]]
+	then
+		pid=`readProperty $PROPERTY_KEY_PID`;
+		ip=`readProperty $PROPERTY_KEY_IP`;
+		port=`readProperty $PROPERTY_KEY_PORT`;
+
+		#se verifica que este corriendo al chequear la existencia del proceso
+		if [[ -e "/proc/$pid/status" ]]
+		then
+
+			uptime=`basherUptime`; 
+			echo -e "Estado:\t\tCorriendo ($pid)";
+
+			#responde a peticiones? 1=Si, 0=No
+			responde=`wget -qO- -S "http://$ip:$port" |& grep -m1 Server | grep Basher | wc -l`;
+			
+			if [[ "$responde" -eq 1 ]]
+			then
+				echo -e "Responde:\tSi";
+			else
+				echo -e "Responde:\tNo";
+			fi
+
+			echo -e "Uptime:\t\t$uptime";
+		else
+			#no está ejecutand
+			echo -e "Estado:\t\tDetenido (externamente y/o por error)";
+		fi
+		#Se muestran sus propiedades
+		echo -e "\nConfiguracion:"
+		echo -e "\tIP:\t$ip";
+		echo -e "\tPuerto:\t$port";
+
+	else
+		echo -e "Estado:\tDetenido (manualmente)";
+	fi
+	echo;
 }
 
 
