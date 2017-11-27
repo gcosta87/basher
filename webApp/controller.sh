@@ -63,7 +63,7 @@ serverResources(){
 
 	nombreCPU=`cat /proc/cpuinfo | grep 'model name' | head -n1 | sed -r 's;^model name\s+:\s+;;'`;
 	cantidadCores=`cat /proc/cpuinfo | grep 'processor' | wc -l`;
-	cpuPorcUso=`(echo "scale = 2"; ps -A -o pcpu | tail -n+2 | paste -sd+ ;) | bc`;
+	cpuPorcUso=`(echo "scale = 2"; ps -A -o pcpu | tail -n+2 | paste -sd+ ;) | bc | sed -r -e 's:^[.]:0.:'`;
 	cantidadProcesos=`ps -A | tail -n+2 | wc -l`;
 
 	sendJSONResponse "{\"memoria\":{\"libre\":\"$memoriaLibre\",\"usada\":\"$memoriaUsada\",\"uso\":\"$memoriaPorcUsada\"},\"cpu\":{\"nombre\":\"$nombreCPU\",\"cores\":$cantidadCores,\"uso\":$cpuPorcUso,\"procesos\":$cantidadProcesos}}";

@@ -23,6 +23,7 @@ En desarrollo (inmaduro / experimental)
 - **Socat** >= 1.7.2.3 
 - **Bash** >= 4.3
 - **libwww-perl**: Libreria de Perl con "helpers" para acceder a URLs,  instalada por defecto en varias distros de Linux (Debian, Ubuntu,..) 
+- **bc**: utilitario para realizar calculos, instalada por defecto en varias distribuciones Linux.
 
 
 ## Posibles Usos
