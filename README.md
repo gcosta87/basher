@@ -11,8 +11,11 @@ En desarrollo (inmaduro / experimental)
 - Posee un manager (***basherCtl***) para poder iniciarlo, detenerlo y conocer su estado. Incluso es posible obtener el resultado, orientativo, de una prueba de rendimiento (**benchmark**).
 - Soporte para publicar un sitio web estatico: util para landing page, paginas de mantenimiento o bien sitio con informacion estática (html,js).
 - Flujo web inspirado en «Routing+Controllers»: Se definio una capa de abstraccion para separar la logica requerida por el usuario.
-- Diversos tipos de respuestas:
-  
+- Diversos tipos de respuestas: Se brindan algunas funciones que simplifan el envio de respuesta al cliente
+  - HTML
+  - Texto plano
+  - Archivo (cuando este no sea de acceso público)
+  - JSON (muy precaria actualmente)
 - Manejo de errores: basher muestra (actualmente de forma precaria) errores 404 («Page not Found»), y de manera experimental intenta capturar los errores 500 («Internal Server Error») cuando ocurrán. Aun asi es muy simple lanzarlos "manualmente"  por el usuario.
 
 
@@ -23,8 +26,9 @@ En desarrollo (inmaduro / experimental)
 
 
 ## Posibles Usos
-- Levantar una landing page o página de mantenimiento
-- Implementar una pequeña API rest JSON
+- Levantar una landing page o página de mantenimiento.
+- Publicar un sitio web estatico
+- Implementar un pequeño servicio web: descarga de archivos y/o pequeña API Rest JSON.
 
 ## Manejo
 El manejo de basher se realiza atraves de su administrador: basherCtl (*Basher Control*) . Este permite iniciarlo, detenerlo y/o conocer su estado.
@@ -60,6 +64,7 @@ Si se ejecuta sin parámetros, ejecuta por defecto 1.000 peticiones, sino es pos
 
 ## Estructura
 La estructrua de directorios de Basher es la siguiente
+```
 
 ├── basherCtl
 ├── public
@@ -74,9 +79,9 @@ La estructrua de directorios de Basher es la siguiente
 │   ├── constants.sh
 │   └── functions.sh
 └── webApp
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── config.sh
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── controller.sh
-
+    ├── config.sh
+    └── controller.sh
+```
 
 - «public»: es el directorio de acceso publico. Cualquier peticion realizada desde el navegador accedera a esta ubicacion (y sus subdirectorios).
 - «resourses»: directorio privado (no accesible via navegador) utilizado para ubicar archivos que se quieran enviar al cliente a partir de una ruta definida.
