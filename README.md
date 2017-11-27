@@ -3,7 +3,7 @@ basher es un pequeño pseudo-servidor web escrito en Bash que se apoya en socat 
 
 Nació de la inspiracion de un servidor de muy silmilares caracteristicas, BashHttp ([avleen/bashttpd](https://github.com/avleen/bashttpd)), para ser usado en diversos dispositivos basados en Linux para conocer variables del entorno y/o estadisticas del mismo (Raspberry Pi, PC dedicadas,...).
 
-##Estado
+## Estado
 En desarrollo (inmaduro / experimental)
 
 ## Caracteristicas 
