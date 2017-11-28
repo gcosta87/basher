@@ -80,7 +80,7 @@ sendRawTextResponse(){
 
 		#calcula la longitud en bytes!
 		lenght=`echo "$3" | wc -c`;
-		echo -en "HTTP/1.0 ${HTTP_STATUS[$1]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $2\r\nContent-Length: $lenght\r\nConnection: close\r\n\r\n";
+		echo -en "HTTP/1.0 ${HTTP_STATUS[$1]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $2\r\nContent-Length: $lenght\r\nConnection: keep-alive\r\n\r\n";
 		echo "$3";
 }
 
@@ -155,7 +155,7 @@ sendRawFileResponse(){
 		#mimeType=`file -b --mime-type "$1"`;
 		mimeType=`detectMimeType "$1"`;
 		
-		echo -en "HTTP/1.0 ${HTTP_STATUS[200]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $mimeType\r\nContent-Length: $lenght\r\nConnection: close\r\nCache-Control:max-age=${CONFIG[cache_refresh_time]}, public, immutable\r\n\r\n";
+		echo -en "HTTP/1.0 ${HTTP_STATUS[200]}\r\nServer: Basher v$BASHER_VERSION\r\nDate: $now\r\nContent-Type: $mimeType\r\nContent-Length: $lenght\r\nConnection: keep-alive\r\nCache-Control:max-age=${CONFIG[cache_refresh_time]}, public, immutable\r\n\r\n";
 		cat "$1";
 	else
 		#dont exist the file...

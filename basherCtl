@@ -45,22 +45,26 @@ start(){
 		fi
 	fi
 
-	set -e;
 	echo "Comenzando Basher a través de socat...";
-	socat TCP4-LISTEN:"$port",bind="$bindIP",su=nobody,reuseaddr,fork EXEC:"$BASHER_SCRIPT" &
+	touch "$LOG_FILE";
+	socat -lf"$LOG_FILE" -lpBasher -b1400 TCP4-LISTEN:"$port",bind="$bindIP",su=nobody,reuseaddr,fork EXEC:"$BASHER_SCRIPT" &
 	
 	pid=$!;
 
 	if [ -n "$pid" ]
 	then
-		crearArchivoProperties "$bindIP" $port $pid
-		echo "Escuchando en $bindIP:$port";
-		echo "ID de proceso (pid): $pid";
+		sleep 1;
+		if [[ -e "/proc/$pid/status" ]]
+		then
+			crearArchivoProperties "$bindIP" $port $pid
+			echo "Escuchando en $bindIP:$port";
+			echo "ID de proceso (pid): $pid";
+		else
+			echo -e 'Error: no ha sido posible comenzar basher!.\nSe produjo un error al ejecutar socat.';
+		fi
 	else
-		echo 'Error: no ha sido posible comenzar basher!. Se produjo un error al ejecutar socat.';
-	fi
-	set +e;
-	
+		echo -e 'Error: no ha sido posible comenzar basher!.\nNo ha sido posible obtener el id del proceso al ejecutar socat!.';
+	fi	
 }
 
 

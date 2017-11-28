@@ -14,6 +14,7 @@ declare -r BASHER_VERSION='0.1';
 
 #Archivo para almacenar el las propiedades mas importantes de la instancia que esta corriendo
 declare -r PROPERTY_FILE='instance.properties';
+declare -r LOG_FILE='basher.log';
 
 declare -r PROPERTY_KEY_PID='pid';
 declare -r PROPERTY_KEY_PORT='port';
